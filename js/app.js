@@ -1,4 +1,4 @@
-// THE AMAZE - Admin Application Core
+﻿// THE AMAZE - Admin Application Core
 
 import { AdminAuth } from './auth.js';
 import { AdminState, KEYS } from './data.js';
@@ -61,7 +61,7 @@ class AdminApp {
                             </div>
                             <div>
                                 <label class="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">Contact Email</label>
-                                <input id="settings-email" type="email" value="admin@theamaze.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-[11px] font-bold uppercase tracking-wider focus:outline-none focus:border-accent-cyan/50 transition-colors" />
+                                <input id="settings-email" type="email" value="admin@theamazes.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-[11px] font-bold uppercase tracking-wider focus:outline-none focus:border-accent-cyan/50 transition-colors" />
                             </div>
                             <div>
                                 <label class="text-[9px] font-black uppercase tracking-widest text-white/40 mb-2 block">Contact Phone</label>
@@ -347,3 +347,4 @@ class AdminApp {
 document.addEventListener('DOMContentLoaded', () => {
     new AdminApp();
 });
+
