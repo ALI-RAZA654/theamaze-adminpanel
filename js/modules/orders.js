@@ -129,7 +129,11 @@ export const OrdersModule = {
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-[10px] font-black text-white uppercase">${item.name}</div>
-                                         <div class="text-[8px] font-bold text-white/40 uppercase">QTY: ${item.qty} × RS.${item.price}</div>
+                                        <div class="text-[8px] font-bold text-white/40 uppercase">
+                                            QTY: ${item.qty} × RS.${item.price}
+                                            ${item.size ? ` • Size: ${item.size}` : ''}
+                                            ${item.color ? ` • Color: ${item.color}` : ''}
+                                        </div>
                                     </div>
                                 </div>
                             `).join('')}

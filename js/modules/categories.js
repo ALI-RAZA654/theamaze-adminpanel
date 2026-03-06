@@ -87,16 +87,15 @@ export const CategoriesModule = {
     async init() {
         // Sync inputs back to state to avoid losing data on toggle
         const syncInputs = () => {
-            document.querySelectorAll('.category-name-input').forEach(input => {
-                const idx = parseInt(input.dataset.index);
-                if (this.state.categories[idx]) {
-                    const id = this.state.categories[idx].uid || `temp_${idx}`;
-                    this.state.categories[idx].name = input.value;
-                    const uidInput = document.getElementById(`uid_${id}`);
-                    if (uidInput) this.state.categories[idx].uid = uidInput.value;
-                    const imgInputValue = document.getElementById(`img_${id}`);
-                    if (imgInputValue) this.state.categories[idx].image = imgInputValue.value;
-                }
+            this.state.categories.forEach((cat, idx) => {
+                const id_source = cat.uid || `temp_${idx}`;
+                const nameInput = document.getElementById(`name_${id_source}`);
+                const uidInput = document.getElementById(`uid_${id_source}`);
+                const imgInput = document.getElementById(`img_${id_source}`);
+
+                if (nameInput) cat.name = nameInput.value;
+                if (uidInput && !cat.uid) cat.uid = uidInput.value; // Only sync UID if it was empty (new category)
+                if (imgInput) cat.image = imgInput.value;
             });
         };
 

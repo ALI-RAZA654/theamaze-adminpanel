@@ -2,7 +2,7 @@
 
 export class AdminAuth {
     static SESSION_KEY = 'the_amaze_admin_session';
-    static API_URL = 'http://127.0.0.1:5000/api/auth'; // Adjust to your backend URL
+    static API_URL = 'https://theamazebackend-production.up.railway.app/api/auth'; // Production backend URL
 
     static async login(email, password) {
         try {

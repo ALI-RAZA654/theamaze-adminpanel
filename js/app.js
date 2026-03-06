@@ -19,6 +19,7 @@ import { MuseModule } from './modules/muse.js';
 import { ContactModule } from './modules/contact.js';
 import { TrustedModule } from './modules/trusted.js';
 import { AboutModule } from './modules/about.js';
+import { SubscribersModule } from './modules/subscribers.js';
 
 class AdminApp {
     constructor() {
@@ -38,6 +39,7 @@ class AdminApp {
             contact: ContactModule,
             trusted: TrustedModule,
             about: AboutModule,
+            subscribers: SubscribersModule,
             settings: {
                 render: () => `
                 <div class="space-y-8 animate-fade-in max-w-4xl">
@@ -313,12 +315,17 @@ class AdminApp {
             ReviewsModule.deleteReview(id);
         });
     }
-    deleteReview(id) {
+    deleteMuse(id) {
         UI.confirm('Are you certain you want to erase this Muse identity from the archive?', () => {
             MuseModule.handleDelete ? MuseModule.handleDelete(id) : console.error('Delete not implemented');
         });
     }
     updateTrustStat(id) { TrustedModule.updateStat(id); }
+    deleteSubscriber(id) {
+        UI.confirm('Are you sure you want to permanently erase this potential elite subscriber identity?', () => {
+            SubscribersModule.deleteSubscriber(id);
+        });
+    }
 
     async handleSearch(query) {
         if (this.currentSection === 'products') {

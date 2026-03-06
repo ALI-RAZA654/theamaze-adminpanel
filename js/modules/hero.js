@@ -58,6 +58,17 @@ export const HeroModule = {
                                 <p id="heroUploadStatus" class="text-[8px] text-white/20 uppercase mt-2 text-center">Protocol readiness check active.</p>
                             </div>
 
+                            <div class="p-6 bg-accent-cyan/5 border border-accent-cyan/20 rounded-2xl">
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-accent-cyan mb-4">Atmospheric Featured Asset (Single Card)</label>
+                                <select id="h_featured" class="w-full admin-input outline-none">
+                                    <option value="">Select Featured Product</option>
+                                    ${products.map(p => `
+                                        <option value="${p._id}" ${hero.featuredProductId == p._id ? 'selected' : ''}>${p.name}</option>
+                                    `).join('')}
+                                </select>
+                                <p class="text-[8px] text-white/20 uppercase mt-2">This product will be highlighted in the main Hero featured box.</p>
+                            </div>
+
                             <div>
                                 <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Spotlight Series Protocols (3 Products Required)</label>
                                 <div class="space-y-4">
@@ -140,6 +151,7 @@ export const HeroModule = {
                     subtext: document.getElementById('h_subtext').value.trim(),
                     ctaText: document.getElementById('h_cta').value.trim(),
                     videoLink: videoLink,
+                    featuredProductId: document.getElementById('h_featured').value,
                     spotlightProductIds: spotlightProductIds,
                     enableSpotlight: document.getElementById('h_spotlight').checked
                 };

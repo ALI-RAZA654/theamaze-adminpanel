@@ -64,9 +64,9 @@ export const MuseModule = {
 
     renderMuseCard(muse, index) {
         return `
-            <div class="p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] flex flex-col group relative">
-                <button onclick="window.AdminApp.deleteReview('${muse._id}')" class="absolute top-4 right-4 text-red-500/20 hover:text-red-500 transition-all z-20">
-                    <i class="fas fa-times-circle"></i>
+            <div class="p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] flex flex-col group relative overflow-hidden">
+                <button onclick="window.AdminApp.deleteMuse('${muse._id}')" class="absolute top-4 right-4 text-white/20 hover:text-red-500 transition-all z-20 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center border border-white/5">
+                    <i class="fas fa-times text-[10px]"></i>
                 </button>
 
                 <div class="aspect-[3/4] rounded-2xl overflow-hidden mb-6 bg-black/40 relative">
@@ -149,12 +149,18 @@ export const MuseModule = {
                             <input type="text" id="new_m_auth" class="w-full admin-input" required>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Transmission Portrait URL</label>
-                            <input type="text" id="new_m_img" class="w-full admin-input" required>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Transmission Portrait</label>
+                            <div class="flex gap-4">
+                                <input type="text" id="new_m_img" class="flex-1 admin-input text-[10px]" placeholder="URL">
+                                <label class="shrink-0 flex items-center justify-center p-4 bg-white/5 border border-dashed border-white/10 rounded-xl hover:bg-white/10 hover:border-accent-cyan/30 cursor-pointer transition-all">
+                                    <i class="fas fa-upload text-[10px] text-accent-cyan"></i>
+                                    <input type="file" id="new_m_file" class="hidden" accept="image/*" onchange="window._handleNewMuseUpload(this)">
+                                </label>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Testimonial Pulse</label>
-                            <textarea id="new_m_text" class="w-full admin-input h-24 resize-none"></textarea>
+                            <textarea id="new_m_text" class="w-full admin-input h-24 resize-none text-[10px]"></textarea>
                         </div>
                     </div>
                 `, [
@@ -177,6 +183,19 @@ export const MuseModule = {
                         }
                     }
                 ]);
+
+                window._handleNewMuseUpload = async (input) => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    try {
+                        UI.toast('Syncing Digital Reflection...');
+                        const result = await API.upload(file);
+                        document.getElementById('new_m_img').value = result.url;
+                        UI.toast('Protrait Protocol Synchronized');
+                    } catch (err) {
+                        UI.toast(err.message, 'error');
+                    }
+                };
             };
         }
 

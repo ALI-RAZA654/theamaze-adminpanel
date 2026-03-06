@@ -142,6 +142,47 @@ export const SalesModule = {
                         </div>
                     </div>
                 </div>
+
+                <!-- ==================== MARQUEE PROTOCOL ==================== -->
+                <div class="glass-panel p-10 rounded-[2.5rem]">
+                    <div class="flex items-center justify-between mb-10">
+                        <div>
+                            <h2 class="text-2xl font-black uppercase tracking-tighter">Marquee Protocol</h2>
+                            <p class="text-[9px] text-white/30 uppercase tracking-widest mt-1">Manage multiple scrolling announcement banners</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-[10px] font-bold text-white/20 uppercase tracking-widest">Status</span>
+                            <button id="toggleMarquee" class="w-12 h-6 bg-white/5 rounded-full relative p-1 transition-all">
+                                <div class="w-4 h-4 ${promoData.marquee.active ? 'bg-cyan-500 translate-x-6' : 'bg-white/20 translate-x-0'} rounded-full transition-all"></div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div id="marqueeItemsContainer" class="space-y-4">
+                            ${(promoData.marquee.texts || [promoData.marquee.text || 'Welcome to THE AMAZE!']).map((text, idx) => `
+                                <div class="marquee-item-row flex gap-4">
+                                    <div class="flex-1 relative">
+                                        <span class="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/10 uppercase tracking-widest">Banner 0${idx + 1}</span>
+                                        <input type="text" class="marquee-text-input w-full admin-input pl-24" value="${text}">
+                                    </div>
+                                    <button class="remove-marquee-item p-4 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl transition-all">
+                                        <i class="fas fa-trash-alt text-sm"></i>
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="flex gap-4 pt-4 border-t border-white/5">
+                            <button id="addMarqueeItem" class="flex-1 py-4 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all">
+                                <i class="fas fa-plus mr-2"></i> Add Banner Node
+                            </button>
+                            <button id="syncMarquee" class="flex-1 py-4 bg-cyan-500 text-black font-black rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.02] transition-all">
+                                Sync Marquee Protocol
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
     },
@@ -211,6 +252,59 @@ export const SalesModule = {
             try {
                 await API.delete(`/promo/${id}`);
                 UI.toast('Promo code deleted');
+                window.AdminApp.switchSection('sales');
+            } catch (err) {
+                UI.toast(err.message, 'error');
+            }
+        };
+
+        // Marquee Logic
+        const container = document.getElementById('marqueeItemsContainer');
+        document.getElementById('addMarqueeItem').onclick = () => {
+            const count = container.querySelectorAll('.marquee-item-row').length + 1;
+            const div = document.createElement('div');
+            div.className = 'marquee-item-row flex gap-4';
+            div.innerHTML = `
+                <div class="flex-1 relative">
+                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/10 uppercase tracking-widest">Banner 0${count}</span>
+                    <input type="text" class="marquee-text-input w-full admin-input pl-24" value="">
+                </div>
+                <button class="remove-marquee-item p-4 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl transition-all">
+                    <i class="fas fa-trash-alt text-sm"></i>
+                </button>
+            `;
+            container.appendChild(div);
+            // Re-bind remove buttons
+            div.querySelector('.remove-marquee-item').onclick = () => div.remove();
+        };
+
+        // Bind existing remove buttons
+        document.querySelectorAll('.remove-marquee-item').forEach(btn => {
+            btn.onclick = (e) => e.target.closest('.marquee-item-row').remove();
+        });
+
+        document.getElementById('toggleMarquee').onclick = async () => {
+            try {
+                await API.request('/promo/toggle', { method: 'PATCH' });
+                UI.toast('Marquee State Synchronized');
+                window.AdminApp.switchSection('sales');
+            } catch (err) {
+                UI.toast(err.message, 'error');
+            }
+        };
+
+        document.getElementById('syncMarquee').onclick = async () => {
+            try {
+                const inputs = document.querySelectorAll('.marquee-text-input');
+                const texts = Array.from(inputs).map(i => i.value).filter(v => v.trim() !== '');
+
+                if (texts.length === 0) {
+                    UI.toast('At least one banner message is required', 'error');
+                    return;
+                }
+
+                await API.put('/promo', { texts });
+                UI.toast('Marquee Architecture Synchronized');
                 window.AdminApp.switchSection('sales');
             } catch (err) {
                 UI.toast(err.message, 'error');
