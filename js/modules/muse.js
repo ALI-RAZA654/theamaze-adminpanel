@@ -149,11 +149,14 @@ export const MuseModule = {
                             <input type="text" id="new_m_auth" class="w-full admin-input" required>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Transmission Portrait</label>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Transmission Portrait URL</label>
                             <div class="flex gap-4">
-                                <input type="text" id="new_m_img" class="flex-1 admin-input text-[10px]" placeholder="URL">
-                                <label class="shrink-0 flex items-center justify-center p-4 bg-white/5 border border-dashed border-white/10 rounded-xl hover:bg-white/10 hover:border-accent-cyan/30 cursor-pointer transition-all">
-                                    <i class="fas fa-upload text-[10px] text-accent-cyan"></i>
+                                <input type="text" id="new_m_img" class="flex-1 admin-input text-[10px]" placeholder="https://...">
+                                <label class="shrink-0">
+                                    <div class="h-11 px-6 bg-accent-cyan text-black rounded-xl hover:bg-white cursor-pointer transition-all flex items-center justify-center gap-2">
+                                        <i class="fas fa-upload text-[10px]"></i>
+                                        <span class="text-[9px] font-black uppercase tracking-widest">Upload Portrait</span>
+                                    </div>
                                     <input type="file" id="new_m_file" class="hidden" accept="image/*" onchange="window._handleNewMuseUpload(this)">
                                 </label>
                             </div>
