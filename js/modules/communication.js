@@ -101,10 +101,17 @@ export const PaymentsModule = {
                             <div>
                                 <h3 class="text-[10px] font-black uppercase tracking-widest text-accent-cyan mb-4">EasyPaisa Config</h3>
                                 <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Title</label>
-                                        <input type="text" id="p_ep_title" value="${prep.easyPaisaTitle || ''}" class="w-full admin-input">
+                                    <div class="flex items-center justify-between">
+                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20">Account Title</label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="p_ep_active" class="hidden peer" ${prep.easyPaisaActive !== false ? 'checked' : ''}>
+                                            <div class="w-8 h-4 bg-white/10 rounded-full relative transition-all peer-checked:bg-accent-cyan">
+                                                <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-all peer-checked:left-4.5"></div>
+                                            </div>
+                                            <span class="text-[8px] font-bold uppercase tracking-widest text-white/20">Active</span>
+                                        </label>
                                     </div>
+                                    <input type="text" id="p_ep_title" value="${prep.easyPaisaTitle || ''}" class="w-full admin-input">
                                     <div>
                                         <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Number</label>
                                         <input type="text" id="p_ep" value="${prep.easyPaisa}" class="w-full admin-input">
@@ -114,10 +121,17 @@ export const PaymentsModule = {
                             <div>
                                 <h3 class="text-[10px] font-black uppercase tracking-widest text-accent-cyan mb-4">JazzCash Config</h3>
                                 <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Title</label>
-                                        <input type="text" id="p_jc_title" value="${prep.jazzCashTitle || ''}" class="w-full admin-input">
+                                    <div class="flex items-center justify-between">
+                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20">Account Title</label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="p_jc_active" class="hidden peer" ${prep.jazzCashActive !== false ? 'checked' : ''}>
+                                            <div class="w-8 h-4 bg-white/10 rounded-full relative transition-all peer-checked:bg-accent-cyan">
+                                                <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-all peer-checked:left-4.5"></div>
+                                            </div>
+                                            <span class="text-[8px] font-bold uppercase tracking-widest text-white/20">Active</span>
+                                        </label>
                                     </div>
+                                    <input type="text" id="p_jc_title" value="${prep.jazzCashTitle || ''}" class="w-full admin-input">
                                     <div>
                                         <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Number</label>
                                         <input type="text" id="p_jc" value="${prep.jazzCash}" class="w-full admin-input">
@@ -155,8 +169,10 @@ export const PaymentsModule = {
                 const payload = {
                     easyPaisa: document.getElementById('p_ep').value,
                     easyPaisaTitle: document.getElementById('p_ep_title').value,
+                    easyPaisaActive: document.getElementById('p_ep_active').checked,
                     jazzCash: document.getElementById('p_jc').value,
                     jazzCashTitle: document.getElementById('p_jc_title').value,
+                    jazzCashActive: document.getElementById('p_jc_active').checked,
                     shippingFee: parseInt(document.getElementById('p_fee').value),
                     enableCOD: document.getElementById('p_cod').checked
                 };
