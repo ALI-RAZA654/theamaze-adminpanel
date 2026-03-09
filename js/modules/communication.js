@@ -3,11 +3,9 @@ import { UI } from '../components/ui.js';
 
 export const MarqueeModule = {
     async render() {
-        // Fetch marquee from promo endpoint
         const data = await API.get('/promo');
         const marquee = data.marquee;
-        const codes = data.codes; // For reference if needed
-        const primaryCode = codes.length > 0 ? codes[0].code : 'NONE';
+        const texts = marquee.texts || [marquee.text] || ['Welcome to THE AMAZE!'];
 
         return `
             <div class="space-y-10 animate-fade-in">
@@ -16,25 +14,32 @@ export const MarqueeModule = {
                     
                     <div class="space-y-8">
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Scrolling Transmission Text</label>
-                            <input type="text" id="m_text" value="${marquee.text}" class="w-full admin-input">
-                        </div>
-                        <div class="grid grid-cols-2 gap-10">
-                            <div>
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Primary Discount Code</label>
-                                <input type="text" id="m_code" value="${primaryCode}" class="w-full admin-input uppercase" readonly>
-                                <p class="text-[8px] text-white/20 uppercase mt-2">Manage codes in Settings > Promo Codes (Coming Soon)</p>
-                            </div>
-                            <div class="flex items-center gap-4 pt-6">
-                                <label class="flex items-center gap-3 cursor-pointer">
-                                    <input type="checkbox" id="m_enabled" class="hidden peer" ${marquee.active ? 'checked' : ''}>
-                                    <div class="w-10 h-6 bg-white/10 rounded-full relative transition-all peer-checked:bg-accent-cyan">
-                                        <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:left-5"></div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-4">Scrolling Transmission Text (Multiple)</label>
+                            <div id="marquee-items-container" class="space-y-4">
+                                ${texts.map((t, i) => `
+                                    <div class="flex gap-4 marquee-item">
+                                        <input type="text" class="w-full admin-input marquee-input" value="${t}">
+                                        <button onclick="this.parentElement.remove()" class="px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-red-500/20 hover:border-red-500/30 transition-all">
+                                            <i class="fas fa-times text-xs"></i>
+                                        </button>
                                     </div>
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-white/40">Broadcasting Enabled</span>
-                                </label>
+                                `).join('')}
                             </div>
+                            <button id="addMarqueeItem" class="mt-4 px-6 py-3 bg-white/5 border border-dashed border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 hover:border-accent-cyan/30 transition-all flex items-center gap-2">
+                                <i class="fas fa-plus"></i> Add New Message
+                            </button>
                         </div>
+                        
+                        <div class="flex items-center gap-4 pt-6">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="m_enabled" class="hidden peer" ${marquee.active ? 'checked' : ''}>
+                                <div class="w-10 h-6 bg-white/10 rounded-full relative transition-all peer-checked:bg-accent-cyan">
+                                    <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:left-5"></div>
+                                </div>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-white/40">Broadcasting Enabled</span>
+                            </label>
+                        </div>
+
                         <button id="saveMarquee" class="btn-primary px-12 py-5 rounded-2xl text-[10px] font-bold uppercase tracking-widest">
                             Sync Broadcast Protocol
                         </button>
@@ -45,10 +50,31 @@ export const MarqueeModule = {
     },
 
     async init() {
+        const addBtn = document.getElementById('addMarqueeItem');
+        if (addBtn) {
+            addBtn.onclick = () => {
+                const container = document.getElementById('marquee-items-container');
+                const div = document.createElement('div');
+                div.className = 'flex gap-4 marquee-item';
+                div.innerHTML = `
+                    <input type="text" class="w-full admin-input marquee-input" value="">
+                    <button onclick="this.parentElement.remove()" class="px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-red-500/20 hover:border-red-500/30 transition-all">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            };
+        }
+
         document.getElementById('saveMarquee').onclick = async () => {
             try {
+                const texts = Array.from(document.querySelectorAll('.marquee-input'))
+                    .map(i => i.value.trim())
+                    .filter(t => t);
+
                 const payload = {
-                    text: document.getElementById('m_text').value,
+                    texts,
+                    text: texts[0] || 'Welcome to THE AMAZE!',
                     active: document.getElementById('m_enabled').checked
                 };
                 await API.put('/promo', payload);
@@ -63,7 +89,7 @@ export const MarqueeModule = {
 // --- Payments Module ---
 export const PaymentsModule = {
     async render() {
-        const prep = await API.get('/payment') || { easyPaisa: '', jazzCash: '', shippingFee: 0, enableCOD: true };
+        const prep = await API.get('/payment') || { easyPaisa: '', easyPaisaTitle: '', jazzCash: '', jazzCashTitle: '', shippingFee: 0, enableCOD: true };
 
         return `
             <div class="space-y-10 animate-fade-in">
@@ -73,17 +99,35 @@ export const PaymentsModule = {
                     <div class="grid lg:grid-cols-2 gap-10">
                         <div class="space-y-8">
                             <div>
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">EasyPaisa Protocol Account</label>
-                                <input type="text" id="p_ep" value="${prep.easyPaisa}" class="w-full admin-input">
+                                <h3 class="text-[10px] font-black uppercase tracking-widest text-accent-cyan mb-4">EasyPaisa Config</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Title</label>
+                                        <input type="text" id="p_ep_title" value="${prep.easyPaisaTitle || ''}" class="w-full admin-input">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Number</label>
+                                        <input type="text" id="p_ep" value="${prep.easyPaisa}" class="w-full admin-input">
+                                    </div>
+                                </div>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">JazzCash Protocol Account</label>
-                                <input type="text" id="p_jc" value="${prep.jazzCash}" class="w-full admin-input">
+                                <h3 class="text-[10px] font-black uppercase tracking-widest text-accent-cyan mb-4">JazzCash Config</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Title</label>
+                                        <input type="text" id="p_jc_title" value="${prep.jazzCashTitle || ''}" class="w-full admin-input">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2">Account Number</label>
+                                        <input type="text" id="p_jc" value="${prep.jazzCash}" class="w-full admin-input">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="space-y-8">
                             <div>
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Global Shipping Fee ($)</label>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2">Global Shipping Fee (RS)</label>
                                 <input type="number" id="p_fee" value="${prep.shippingFee}" class="w-full admin-input">
                             </div>
                             <div class="flex items-center gap-4 pt-6">
@@ -110,7 +154,9 @@ export const PaymentsModule = {
             try {
                 const payload = {
                     easyPaisa: document.getElementById('p_ep').value,
+                    easyPaisaTitle: document.getElementById('p_ep_title').value,
                     jazzCash: document.getElementById('p_jc').value,
+                    jazzCashTitle: document.getElementById('p_jc_title').value,
                     shippingFee: parseInt(document.getElementById('p_fee').value),
                     enableCOD: document.getElementById('p_cod').checked
                 };
